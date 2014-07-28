@@ -1,0 +1,41 @@
+<h1>Super Simple Calculator</h1>
+
+<form>
+  (<input name="num"> + 3) * 2 = <span result>?</span><br>
+  <button id='calculate'>calculate...</button> (<span status></span>)
+</form>
+
+<script type="text/javascript">
+  var $ = document.querySelector.bind(document);
+
+  function status(status) { $("[status]").innerText = status; }
+  function checkStatus (workFlowId) {
+    var oReq = new XMLHttpRequest;
+    oReq.onload = function () {
+      res = JSON.parse(oReq.response);
+      status(res.status);
+      if(res.result !== undefined)
+        $("[result]").innerText = res.result;
+      if (res.status == 'open')
+        setTimeout(checkStatus.bind(null, workFlowId), 1000);
+    };
+
+    oReq.open("get", "/result/" + workFlowId, true);
+    oReq.send();
+  }
+
+
+  $("form").addEventListener('submit', function (e)
+  {
+    e.preventDefault();
+    status("requesting");
+    var oReq = new XMLHttpRequest;
+    oReq.onload = function () {
+      status("requested");
+      checkStatus(oReq.response);
+    };
+
+    oReq.open("post", "/start-flow", true);
+    oReq.send(new FormData($("form")));
+  })
+</script>

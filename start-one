@@ -1,0 +1,4 @@
+require_relative 'flow/activities'
+require_relative 'flow/workflows'
+
+HelloWorldUtils.new.workflow_client(HelloWorldWorkflow).start_execution("6")
